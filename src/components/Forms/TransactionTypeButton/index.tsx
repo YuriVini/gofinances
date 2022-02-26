@@ -22,7 +22,7 @@ export function TransactionTypeButton({
 }: Props) {
   return (
     <Container type={type} isActive={isActive}>
-      <Button>
+      <Button {...rest}>
         <Icon name={icons[type]} type={type} />
         <Title>{title}</Title>
       </Button>
