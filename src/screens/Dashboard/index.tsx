@@ -61,16 +61,13 @@ export function Dashboard() {
           .map((transaction) => new Date(transaction.date).getTime())
       )
     );
-    //  Outra forma de fazer
-    //  `${lastTransactions.getDate()} de ${lastTransactions.toLocaleString(
-    //   "pt-BR",
-    //   { month: "long" }
-    // )}`;
 
-    return Intl.DateTimeFormat("pt-BR", {
-      day: "2-digit",
-      month: "long",
-    }).format(new Date(lastTransactions));
+    console.log(lastTransactions.getDate());
+
+    return `${lastTransactions.getDate()} de ${lastTransactions.toLocaleString(
+      "pt-BR",
+      { month: "long" }
+    )}`;
   }
 
   function getTotalIntervalTransactionDate(collection: DataListProps[]) {
@@ -178,18 +175,14 @@ export function Dashboard() {
     });
     setIsLoading(false);
   }
+
   useEffect(() => {
     loadTransaction();
   }, []);
 
   useFocusEffect(
     useCallback(() => {
-      let isActive = true;
       loadTransaction();
-      isActive;
-      return () => {
-        isActive = false;
-      };
     }, [])
   );
 
