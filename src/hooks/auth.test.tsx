@@ -8,7 +8,7 @@ import mockAsyncStorage from "@react-native-async-storage/async-storage/jest/asy
 
 import { AuthProvider, useAuth } from "./auth";
 import { cleanup, waitFor } from "@testing-library/react-native";
-import AsyncStorageLib from "@react-native-async-storage/async-storage";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 jest.mock("expo-auth-session");
 jest.mock("@react-native-async-storage/async-storage", () => mockAsyncStorage!);
@@ -31,10 +31,11 @@ fetchMock.mockResponseOnce(
 );
 
 describe("Auth Hook", () => {
-  beforeAll(async () => {
+  beforeEach(async () => {
+    jest.clearAllMocks();
     cleanupHook;
     cleanup;
-    await AsyncStorageLib.removeItem("@gofinances:user");
+    await AsyncStorage.removeItem("@gofinances:user");
   });
 
   it("should be able sign in with an existing Google", async () => {
@@ -42,31 +43,25 @@ describe("Auth Hook", () => {
       wrapper: AuthProvider,
     });
 
-    await act(async () => await result.current.signInWithGoogle());
+    waitFor(async () => await result.current.signInWithGoogle());
 
-    waitFor(() => {
+    setTimeout(() => {
       console.log(result.current.user.name);
       expect(result.current.user.name).toBe("Yuri");
       expect(result.current.user.email).toBe("yuri@gmail.com");
       expect(result.current.user.photo).toBe("yuri.png");
-    });
+    }, 100);
   });
 
   it("shouldn't connect if cancel authentication with Google", async () => {
     jest.mock("expo-auth-session", () => ({
       startAsync: () => ({
         type: "cancel",
-        params: {
-          access_token: "test_token",
-        },
       }),
     }));
     fetchMock.mockResponseOnce(
       JSON.stringify({
-        id: "",
-        email: "",
-        given_name: "",
-        picture: "",
+        type: "cancel",
       })
     );
 
@@ -74,12 +69,9 @@ describe("Auth Hook", () => {
       wrapper: AuthProvider,
     });
 
-    await act(async () => await result.current.signInWithGoogle());
+    waitFor(async () => await result.current.signInWithGoogle());
 
-    waitFor(() => {
-      console.log(result.current.user.id);
-
-      expect(result.current.user).not.toHaveProperty("id");
-    });
+    console.log(result.current.user.id);
+    expect(result.current.user).not.toHaveProperty("id");
   });
 });
