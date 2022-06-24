@@ -1,44 +1,48 @@
+import "jest-fetch-mock";
 import fetchMock from "jest-fetch-mock";
 import {
-  act,
   cleanup as cleanupHook,
   renderHook,
 } from "@testing-library/react-hooks";
+import { mocked } from "ts-jest/utils";
+
 import mockAsyncStorage from "@react-native-async-storage/async-storage/jest/async-storage-mock";
 
 import { AuthProvider, useAuth } from "./auth";
 import { cleanup, waitFor } from "@testing-library/react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { startAsync } from "expo-auth-session";
 
 jest.mock("expo-auth-session");
 jest.mock("@react-native-async-storage/async-storage", () => mockAsyncStorage!);
 fetchMock.enableMocks();
-jest.mock("expo-auth-session", () => ({
-  startAsync: () => ({
-    type: "success",
-    params: {
-      access_token: "test_token",
-    },
-  }),
-}));
-fetchMock.mockResponseOnce(
-  JSON.stringify({
-    id: "1234",
-    email: "yuri@gmail.com",
-    given_name: "Yuri",
-    picture: "yuri.png",
-  })
-);
+const googleMocked = mocked(startAsync as any);
 
 describe("Auth Hook", () => {
   beforeEach(async () => {
     jest.clearAllMocks();
+    jest.resetModules();
     cleanupHook;
     cleanup;
     await AsyncStorage.removeItem("@gofinances:user");
   });
 
   it("should be able sign in with an existing Google", async () => {
+    googleMocked.mockReturnValueOnce({
+      type: "success",
+      params: {
+        access_token: "test_token",
+      },
+    });
+    fetchMock.mockResponseOnce(
+      JSON.stringify({
+        id: "1234",
+        email: "yuri@gmail.com",
+        given_name: "Yuri",
+        picture: "yuri.png",
+      })
+    );
+
     const { result } = renderHook(() => useAuth(), {
       wrapper: AuthProvider,
     });
@@ -53,17 +57,10 @@ describe("Auth Hook", () => {
     }, 100);
   });
 
-  it("shouldn't connect if cancel authentication with Google", async () => {
-    jest.mock("expo-auth-session", () => ({
-      startAsync: () => ({
-        type: "cancel",
-      }),
-    }));
-    fetchMock.mockResponseOnce(
-      JSON.stringify({
-        type: "cancel",
-      })
-    );
+  it("shouldn't connect if cancel authentication with Google", () => {
+    googleMocked.mockReturnValueOnce({
+      type: "cancel",
+    });
 
     const { result } = renderHook(() => useAuth(), {
       wrapper: AuthProvider,
