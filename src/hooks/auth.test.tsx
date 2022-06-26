@@ -4,7 +4,6 @@ import {
   cleanup as cleanupHook,
   renderHook,
 } from "@testing-library/react-hooks";
-import { mocked } from "ts-jest/utils";
 
 import mockAsyncStorage from "@react-native-async-storage/async-storage/jest/async-storage-mock";
 
@@ -16,7 +15,7 @@ import { startAsync } from "expo-auth-session";
 jest.mock("expo-auth-session");
 jest.mock("@react-native-async-storage/async-storage", () => mockAsyncStorage!);
 fetchMock.enableMocks();
-const googleMocked = mocked(startAsync as any);
+const googleMocked = startAsync as jest.Mock;
 
 describe("Auth Hook", () => {
   beforeEach(async () => {
