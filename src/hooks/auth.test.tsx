@@ -8,7 +8,7 @@ import {
 import mockAsyncStorage from "@react-native-async-storage/async-storage/jest/async-storage-mock";
 
 import { AuthProvider, useAuth } from "./auth";
-import { cleanup, waitFor } from "@testing-library/react-native";
+import { act, cleanup, waitFor } from "@testing-library/react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { startAsync } from "expo-auth-session";
 
@@ -67,5 +67,17 @@ describe("Auth Hook", () => {
     waitFor(async () => await result.current.signInWithGoogle());
 
     expect(result.current.user).not.toHaveProperty("id");
+  });
+
+  it("should get an error when try to authenticate with Google", async () => {
+    const { result } = renderHook(() => useAuth(), {
+      wrapper: AuthProvider,
+    });
+
+    try {
+      await act(() => result.current.signInWithGoogle());
+    } catch {
+      expect(result.current.user).toEqual({});
+    }
   });
 });
