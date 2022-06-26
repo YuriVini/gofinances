@@ -49,7 +49,6 @@ describe("Auth Hook", () => {
     waitFor(async () => await result.current.signInWithGoogle());
 
     setTimeout(() => {
-      console.log(result.current.user.name);
       expect(result.current.user.name).toBe("Yuri");
       expect(result.current.user.email).toBe("yuri@gmail.com");
       expect(result.current.user.photo).toBe("yuri.png");
@@ -67,7 +66,6 @@ describe("Auth Hook", () => {
 
     waitFor(async () => await result.current.signInWithGoogle());
 
-    console.log(result.current.user.id);
     expect(result.current.user).not.toHaveProperty("id");
   });
 });
