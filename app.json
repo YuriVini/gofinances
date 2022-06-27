@@ -14,7 +14,8 @@
       "backgroundColor": "#5636D3"
     },
     "icon": "./assets/icon.png",
-    "description": ""
+    "description": "",
+    "githubUrl": "https://github.com/YuriVini/gofinances"
   },
   "ios": {
     "supportsTablet": true
