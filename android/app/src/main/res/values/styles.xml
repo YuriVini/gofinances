@@ -13,4 +13,5 @@
     <item name="android:windowBackground">@drawable/splashscreen</item>
     <!-- Customize your splash screen theme here -->
   </style>
+  
 </resources>

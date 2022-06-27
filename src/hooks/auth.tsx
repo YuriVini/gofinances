@@ -87,7 +87,7 @@ function AuthProvider({ children }: AuthProviderProps) {
           AppleAuthentication.AppleAuthenticationScope.EMAIL,
         ],
       });
-
+      console.log(credential);
       if (credential) {
         const userLogged = {
           id: String(credential.user),
@@ -100,6 +100,7 @@ function AuthProvider({ children }: AuthProviderProps) {
         await AsyncStorage.setItem(userStorageKey, JSON.stringify(userLogged));
       }
     } catch (error: any) {
+      console.log(error);
       throw new Error(error);
     }
   }
